@@ -1,0 +1,33 @@
+services:
+  # ── Single Web Service: backend serves built frontend ────────
+  - type: web
+    name: school-management-system
+    runtime: node
+    region: oregon          # change to: singapore, frankfurt, ohio, etc.
+    plan: free              # change to: starter, standard for production
+
+    # Render runs commands from the repo root
+    buildCommand: npm run render-build
+    startCommand: npm start
+
+    # Environment variables — set these in the Render dashboard
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false         # set manually in Render dashboard (secret)
+      - key: JWT_SECRET
+        sync: false         # set manually in Render dashboard (secret)
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: CLIENT_URL
+        # Render sets RENDER_EXTERNAL_URL automatically — or set manually
+        fromService:
+          type: web
+          name: school-management-system
+          property: host
+
+    # Auto-deploy on every push to main
+    autoDeploy: true
