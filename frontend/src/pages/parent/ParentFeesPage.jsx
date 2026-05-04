@@ -251,9 +251,12 @@ const ParentFeesPage = () => {
     );
   }
 
-  const current = childrenFees[activeChild];
-  const pendingFees = current?.payments?.filter(p => p.status !== 'paid' && p.dueAmount > 0) || [];
-  const paidFees    = current?.payments?.filter(p => p.status === 'paid') || [];
+  const current     = childrenFees[activeChild] ?? {};
+  const child       = current.child    ?? {};
+  const summary     = current.summary  ?? { totalFees: 0, totalPaid: 0, totalDue: 0, pendingCount: 0 };
+  const payments    = current.payments ?? [];
+  const pendingFees = payments.filter(p => p.status !== 'paid' && (p.dueAmount ?? 0) > 0);
+  const paidFees    = payments.filter(p => p.status === 'paid');
 
   return (
     <div className="space-y-6">
@@ -267,7 +270,7 @@ const ParentFeesPage = () => {
       {childrenFees.length > 1 && (
         <div className="flex gap-2 flex-wrap">
           {childrenFees.map((cf, i) => (
-            <button key={cf.child._id} onClick={() => setActiveChild(i)}
+            <button key={cf.child?._id ?? i} onClick={() => setActiveChild(i)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                 activeChild === i
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
@@ -276,10 +279,10 @@ const ParentFeesPage = () => {
               <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                 activeChild === i ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
               }`}>
-                {cf.child.user?.name?.charAt(0)}
+                {cf.child?.user?.name?.charAt(0) ?? '?'}
               </div>
-              {cf.child.user?.name?.split(' ')[0]}
-              {cf.summary.pendingCount > 0 && (
+              {cf.child?.user?.name?.split(' ')[0] ?? 'Child'}
+              {(cf.summary?.pendingCount ?? 0) > 0 && (
                 <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
                   activeChild === i ? 'bg-white/20 text-white' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
                 }`}>
@@ -296,18 +299,18 @@ const ParentFeesPage = () => {
         <div className="bg-gradient-to-r from-indigo-600 to-violet-600 p-5 text-white">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-2xl font-bold">
-              {current.child.user?.name?.charAt(0)}
+              {child.user?.name?.charAt(0) ?? '?'}
             </div>
             <div className="flex-1">
-              <h2 className="text-lg font-bold">{current.child.user?.name}</h2>
+              <h2 className="text-lg font-bold">{child.user?.name ?? 'Student'}</h2>
               <p className="text-indigo-200 text-sm">
-                {current.child.class?.name} · Section {current.child.section} · Roll #{current.child.rollNumber}
+                {child.class?.name ?? '—'} · Section {child.section ?? '—'} · Roll #{child.rollNumber ?? '—'}
               </p>
-              <p className="text-indigo-300 text-xs mt-0.5">{current.child.studentId}</p>
+              <p className="text-indigo-300 text-xs mt-0.5">{child.studentId ?? ''}</p>
             </div>
-            {current.summary.pendingCount > 0 ? (
+            {summary.pendingCount > 0 ? (
               <div className="text-right">
-                <p className="text-2xl font-extrabold">₹{current.summary.totalDue?.toLocaleString()}</p>
+                <p className="text-2xl font-extrabold">₹{(summary.totalDue ?? 0).toLocaleString()}</p>
                 <p className="text-indigo-200 text-xs">Total Due</p>
               </div>
             ) : (
@@ -322,10 +325,10 @@ const ParentFeesPage = () => {
         {/* Summary row */}
         <div className="grid grid-cols-4 divide-x dark:divide-gray-700 border-t dark:border-gray-700">
           {[
-            { label: 'Total Fees',  value: `₹${current.summary.totalFees?.toLocaleString() || 0}`,  color: 'text-gray-900 dark:text-white' },
-            { label: 'Paid',        value: `₹${current.summary.totalPaid?.toLocaleString() || 0}`,  color: 'text-green-600 dark:text-green-400' },
-            { label: 'Due',         value: `₹${current.summary.totalDue?.toLocaleString() || 0}`,   color: 'text-red-600 dark:text-red-400' },
-            { label: 'Pending',     value: current.summary.pendingCount || 0,                         color: 'text-amber-600 dark:text-amber-400' },
+            { label: 'Total Fees', value: `₹${(summary.totalFees ?? 0).toLocaleString()}`, color: 'text-gray-900 dark:text-white' },
+            { label: 'Paid',       value: `₹${(summary.totalPaid ?? 0).toLocaleString()}`, color: 'text-green-600 dark:text-green-400' },
+            { label: 'Due',        value: `₹${(summary.totalDue  ?? 0).toLocaleString()}`, color: 'text-red-600 dark:text-red-400' },
+            { label: 'Pending',    value: summary.pendingCount ?? 0,                        color: 'text-amber-600 dark:text-amber-400' },
           ].map(item => (
             <div key={item.label} className="p-4 text-center">
               <p className={`text-xl font-extrabold ${item.color}`}>{item.value}</p>
@@ -392,7 +395,7 @@ const ParentFeesPage = () => {
                       </p>
                     )}
                     <button
-                      onClick={() => setPayModal({ fee, childName: current.child.user?.name })}
+                      onClick={() => setPayModal({ fee, childName: child.user?.name ?? 'Student' })}
                       className="mt-2 inline-flex items-center gap-1.5 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-700 active:scale-95 transition-all shadow-md shadow-indigo-500/30">
                       <FaCreditCard /> Pay Now
                     </button>

@@ -149,18 +149,28 @@ const getFeeStats = asyncHandler(async (req, res) => {
 // ─── @access  Parent
 const getChildrenFees = asyncHandler(async (req, res) => {
   const Parent = (await import('../models/Parent.js')).default;
-  const parent = await Parent.findOne({ user: req.user._id }).populate('children');
+
+  const parent = await Parent.findOne({ user: req.user._id }).populate({
+    path: 'children',
+    populate: [
+      { path: 'user',  select: 'name email phone profileImage' },
+      { path: 'class', select: 'name section grade' },
+    ],
+  });
+
   if (!parent) { res.status(404); throw new Error('Parent profile not found'); }
 
   const childrenFees = await Promise.all(
     parent.children.map(async (child) => {
       const payments = await Payment.find({ student: child._id }).sort({ createdAt: -1 });
+
       const summary = {
-        totalFees:    payments.reduce((s, p) => s + p.amount, 0),
-        totalPaid:    payments.reduce((s, p) => s + p.paidAmount, 0),
-        totalDue:     payments.reduce((s, p) => s + (p.dueAmount || 0), 0),
-        pendingCount: payments.filter(p => ['pending', 'overdue'].includes(p.status)).length,
+        totalFees:    payments.reduce((s, p) => s + (p.amount    || 0), 0),
+        totalPaid:    payments.reduce((s, p) => s + (p.paidAmount || 0), 0),
+        totalDue:     payments.reduce((s, p) => s + (p.dueAmount  || 0), 0),
+        pendingCount: payments.filter(p => ['pending', 'overdue', 'partial'].includes(p.status)).length,
       };
+
       return { child, summary, payments };
     })
   );
