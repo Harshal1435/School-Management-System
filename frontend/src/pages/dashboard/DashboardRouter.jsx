@@ -1,10 +1,13 @@
 import { useAuth } from '../../context/AuthContext';
-import AdminDashboard from '../admin/AdminDashboard';
-import TeacherDashboard from '../teacher/TeacherDashboard';
-import StudentDashboard from '../student/StudentDashboard';
-import ParentDashboard from '../parent/ParentDashboard';
-import AccountantDashboard from '../accountant/AccountantDashboard';
+import AdminDashboard       from '../admin/AdminDashboard';
+import TeacherDashboard     from '../teacher/TeacherDashboard';
+import StudentDashboard     from '../student/StudentDashboard';
+import ParentDashboard      from '../parent/ParentDashboard';
+import AccountantDashboard  from '../accountant/AccountantDashboard';
 
+/**
+ * Routes to the correct dashboard based on the logged-in user's role.
+ */
 const DashboardRouter = () => {
   const { user } = useAuth();
 

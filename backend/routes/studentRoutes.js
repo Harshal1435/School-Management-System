@@ -12,11 +12,11 @@ router.use(protect);
 router.get('/my-profile', authorize('student'), getMyProfile);
 
 router.route('/')
-  .get(authorize('admin', 'teacher'), getStudents)
+  .get(authorize('admin', 'teacher', 'accountant'), getStudents)
   .post(authorize('admin'), createStudent);
 
 router.route('/:id')
-  .get(authorize('admin', 'teacher', 'student', 'parent'), getStudent)
+  .get(authorize('admin', 'teacher', 'student', 'parent', 'accountant'), getStudent)
   .put(authorize('admin'), updateStudent)
   .delete(authorize('admin'), deleteStudent);
 

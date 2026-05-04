@@ -135,11 +135,11 @@ const App = () => {
               }
             />
 
-            {/* ── Admin-only Routes ── */}
+            {/* ── Admin + Accountant Routes ── */}
             <Route
               path="/dashboard/students"
               element={
-                <ProtectedRoute roles={['admin']}>
+                <ProtectedRoute roles={['admin', 'accountant']}>
                   <DashboardLayout><StudentsPage /></DashboardLayout>
                 </ProtectedRoute>
               }
@@ -147,7 +147,7 @@ const App = () => {
             <Route
               path="/dashboard/teachers"
               element={
-                <ProtectedRoute roles={['admin']}>
+                <ProtectedRoute roles={['admin', 'accountant']}>
                   <DashboardLayout><TeachersPage /></DashboardLayout>
                 </ProtectedRoute>
               }
@@ -155,7 +155,7 @@ const App = () => {
             <Route
               path="/dashboard/classes"
               element={
-                <ProtectedRoute roles={['admin']}>
+                <ProtectedRoute roles={['admin', 'accountant']}>
                   <DashboardLayout><ClassesPage /></DashboardLayout>
                 </ProtectedRoute>
               }
