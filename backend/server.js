@@ -28,6 +28,7 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import accountantRoutes from './routes/accountantRoutes.js';
+import salaryRoutes     from './routes/salaryRoutes.js';
 
 // ── __dirname for ES modules ──────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
@@ -105,6 +106,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/accountant', accountantRoutes);
+app.use('/api/salary',    salaryRoutes);
 
 // ── Health check ──────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

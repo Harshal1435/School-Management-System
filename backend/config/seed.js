@@ -23,6 +23,7 @@ import Announcement from '../models/Announcement.js';
 import Timetable    from '../models/Timetable.js';
 import Attendance   from '../models/Attendance.js';
 import Result       from '../models/Result.js';
+import Homework     from '../models/Homework.js';
 import { FeeStructure, Payment } from '../models/Fees.js';
 
 const connectDB = async () => {
@@ -33,14 +34,24 @@ const connectDB = async () => {
 };
 
 const clearDB = async () => {
+  // Explicitly delete from every model we use
+  // (mongoose.connection.collections may be empty before first query)
   await Promise.all([
-    User.deleteMany({}), Student.deleteMany({}), Teacher.deleteMany({}),
-    Parent.deleteMany({}), Class.deleteMany({}), Subject.deleteMany({}),
-    Announcement.deleteMany({}), Timetable.deleteMany({}),
-    FeeStructure.deleteMany({}), Payment.deleteMany({}),
-    Attendance.deleteMany({}), Result.deleteMany({}),
+    User.deleteMany({}),
+    Student.deleteMany({}),
+    Teacher.deleteMany({}),
+    Parent.deleteMany({}),
+    Class.deleteMany({}),
+    Subject.deleteMany({}),
+    Announcement.deleteMany({}),
+    Timetable.deleteMany({}),
+    FeeStructure.deleteMany({}),
+    Payment.deleteMany({}),
+    Attendance.deleteMany({}),
+    Result.deleteMany({}),
+    Homework.deleteMany({}),
   ]);
-  console.log('🗑️  Database cleared');
+  console.log('🗑️  All collections cleared');
 };
 
 const seed = async () => {
@@ -53,6 +64,13 @@ const seed = async () => {
     password: 'Admin@123', role: 'admin', phone: '9876543210',
   });
   console.log('✅ Admin created: admin@school.com / Admin@123');
+
+  // ── Accountant ─────────────────────────────────────────────
+  await User.create({
+    name: 'Ravi Accountant', email: 'accountant@school.com',
+    password: 'Account@123', role: 'accountant', phone: '9800000001',
+  });
+  console.log('✅ Accountant created: accountant@school.com / Account@123');
 
   // ── Accountant ─────────────────────────────────────────────
   await User.create({
@@ -328,7 +346,6 @@ const seed = async () => {
   console.log(`✅ ${salaryDocs.length} salary records created`);
 
   // ── Homework ───────────────────────────────────────────────
-  const Homework = (await import('../models/Homework.js')).default;
   await Homework.insertMany([
     {
       title: 'Chapter 5 — Quadratic Equations',
